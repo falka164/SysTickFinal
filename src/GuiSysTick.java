@@ -1,5 +1,6 @@
 import javax.swing.*;
 import javax.swing.border.Border;
+import javax.swing.border.CompoundBorder;
 import javax.swing.border.EtchedBorder;
 import java.awt.*;
 
@@ -13,10 +14,14 @@ public class GuiSysTick {
     private JButton button1;
     private JCheckBox enableInit, tickintInit;
 
-    private JPanel mainPane, northPane, southPane, eastPane, westPane, centerPane, infoPane, flagsPane, registerPane;
+    private JPanel mainPane, northPane, southPane, eastPane, westPane, centerPane, infoPane, flagsPane, registerPane, allDataStates;
 
-    private JLabel ticksLabel, interruptLabel, rvrLabel, cvrLabel;
-    private JFormattedTextField ticksField, interruptField, rvrField, cvrField;
+    private JLabel ticksLabel, interruptLabel, rvrLabel, cvrLabel, rvrStateLabel,
+            cvrStateLabel, enableflagStateLabel, countflagStateLabel, tickintFlagStateLabel,
+            interruptflagStateLabel;
+    private JFormattedTextField ticksField, interruptField, rvrField, cvrField,
+            rvrStateField, cvrStateField, enableflagStateField, countflagStateField,
+            tickintflagStateField, interruptflagStateField;
     private static String ticksString, interruptString, rvrString, cvrString;
     private int howTicks, howInterrupt, rvrValue, cvrValue;
 
@@ -85,6 +90,7 @@ public class GuiSysTick {
         mainPane.add(centerPane, BorderLayout.CENTER);
         this.frame.add(mainPane);
         createNorthPanel();
+        createEastPanel();
     }
 
     private void borderManager() {
@@ -124,7 +130,6 @@ public class GuiSysTick {
 
         ticksLabel.setLabelFor(ticksField);  //Tell accessibility tools about label/textfield pairs.
         interruptLabel.setLabelFor(interruptField);
-
 
         infoPane.setBorder(BorderFactory.createTitledBorder(" Actual Stats "));
 
@@ -191,8 +196,73 @@ public class GuiSysTick {
     }
 
     private void createEastPanel() {
+        allDataStates = new JPanel(new GridLayout(2,2));
+
+        rvrStateLabel = new JLabel(rvrString);
+        cvrStateLabel = new JLabel(cvrString);
+        countflagStateLabel = new JLabel(" COUNTFLAG: ");
+        enableflagStateLabel = new JLabel(" ENABLE: ");
+        tickintFlagStateLabel = new JLabel(" TICKINT: ");
+        interruptflagStateLabel = new JLabel(" INTERRUPT: ");
+
+        rvrStateField = new JFormattedTextField();
+        rvrStateField.setValue(14);
+        rvrStateField.setEditable(false);
+        rvrStateField.setForeground(Color.pink);
+
+        cvrStateField = new JFormattedTextField();
+        cvrStateField.setValue(545);
+        cvrStateField.setEditable(false);
+        cvrStateField.setForeground(Color.pink);
+
+        countflagStateField = new JFormattedTextField();
+        countflagStateField.setValue("true");
+        countflagStateField.setEditable(false);
+        countflagStateField.setForeground(Color.pink);
+
+        enableflagStateField = new JFormattedTextField();
+        enableflagStateField.setValue("true");
+        enableflagStateField.setEditable(false);
+        enableflagStateField.setForeground(Color.pink);
+
+        tickintflagStateField = new JFormattedTextField();
+        tickintflagStateField.setValue("true");
+        tickintflagStateField.setEditable(false);
+        tickintflagStateField.setForeground(Color.pink);
+
+        interruptflagStateField = new JFormattedTextField();
+        interruptflagStateField.setValue("true");
+        interruptflagStateField.setEditable(false);
+        interruptflagStateField.setForeground(Color.pink);
+
+        rvrStateLabel.setLabelFor(rvrStateField);
+        cvrStateLabel.setLabelFor(cvrStateField);
+        countflagStateLabel.setLabelFor(countflagStateField);
+        enableflagStateLabel.setLabelFor(enableflagStateField);
+        tickintFlagStateLabel.setLabelFor(tickintflagStateField);
+        interruptflagStateLabel.setLabelFor(interruptflagStateField);
+
+
+        allDataStates.setBorder(BorderFactory.createTitledBorder("SysTick State Info"));
+        allDataStates.setLayout(new BoxLayout(allDataStates, BoxLayout.Y_AXIS));
+
+
+        allDataStates.add(rvrStateLabel);
+        allDataStates.add(rvrStateField);
+        allDataStates.add(cvrStateLabel);
+        allDataStates.add(cvrStateField);
+        allDataStates.add(countflagStateLabel);
+        allDataStates.add(countflagStateField);
+        allDataStates.add(enableflagStateLabel);
+        allDataStates.add(enableflagStateField);
+        allDataStates.add(interruptflagStateLabel);
+        allDataStates.add(interruptflagStateField);
+
+
+        eastPane.add(allDataStates);
 
     }
+
 
     private void createSouthPanel() {
 
