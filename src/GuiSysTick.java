@@ -7,7 +7,12 @@ public class GuiSysTick {
     private JMenu fileMenu, viewMenu, helpMenu;
     private JMenuItem exitItem, aboutItem;
     private JButton button1;
-    private JPanel contentPane, mainPane, northPane, southPane, eastPane, westPane, centerPane;
+    private JPanel contentPane, mainPane, northPane, southPane, eastPane, westPane, centerPane, infoPane, settingDataPane;
+
+    private JLabel ticksLabel, interruptLabel;
+    private JFormattedTextField ticksField, interruptField;
+    private static String ticksString, interruptString;
+    private int howTicks, howInterrupt;
 
     public GuiSysTick() {
         frame = new JFrame("Systick Simulator ");
@@ -18,7 +23,8 @@ public class GuiSysTick {
         frame.setLocationRelativeTo(null);
         frame.setLayout(new BorderLayout());
         createMenuBar();
-        createContentPane();
+        //createContentPane();
+        createMainPane();
         refreshGui();
     }
 
@@ -73,7 +79,7 @@ public class GuiSysTick {
 
     private void createMainPane() {
         mainPane = new JPanel(new BorderLayout());
-        northPane = new JPanel();
+        northPane = new JPanel(new GridLayout(1, 2));
         westPane = new JPanel();
         southPane = new JPanel();
         eastPane = new JPanel();
@@ -85,10 +91,51 @@ public class GuiSysTick {
         mainPane.add(eastPane, BorderLayout.EAST);
         mainPane.add(centerPane, BorderLayout.CENTER);
         this.frame.add(mainPane);
+        createNorthPanel();
     }
 
     private void createNorthPanel() {
+        createInfoPanel();
 
+
+    }
+
+    private void createInfoPanel() {
+        infoPane = new JPanel(new GridLayout(2, 2));
+
+        ticksString = "Ilość ticków: ";
+        interruptString = "Ilość przerwań: ";
+        howTicks = 0;
+        howInterrupt = 5;
+
+        ticksLabel = new JLabel(ticksString);   //Create the labels.
+        interruptLabel = new JLabel(interruptString);
+
+        ticksField = new JFormattedTextField(); //Create the text fields and set them up.
+        ticksField.setValue(howTicks);
+        ticksField.setEditable(false);
+        ticksField.setForeground(Color.green);
+
+        interruptField = new JFormattedTextField();
+        interruptField.setValue(howInterrupt);
+        interruptField.setEditable(false);
+        interruptField.setForeground(Color.green);
+
+        ticksLabel.setLabelFor(ticksField);  //Tell accessibility tools about label/textfield pairs.
+        interruptLabel.setLabelFor(interruptField);
+
+        infoPane.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+        infoPane.add(ticksLabel);
+        infoPane.add(ticksField);
+        infoPane.add(interruptLabel);
+        infoPane.add(interruptField);
+
+        northPane.add(infoPane);
+    }
+
+    private void createInitialDataPane() {
+        settingDataPane = new JPanel();
+        
 
     }
 
