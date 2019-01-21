@@ -3,18 +3,22 @@ import java.awt.*;
 
 public class GuiSysTick {
     private JFrame frame;
+
     private JMenuBar menuBar;
     private JMenu fileMenu, viewMenu, helpMenu;
     private JMenuItem exitItem, aboutItem;
+
     private JButton button1;
-    private JPanel contentPane, mainPane, northPane, southPane, eastPane, westPane, centerPane, infoPane, flagsPane;
-
-    private JLabel ticksLabel, interruptLabel;
-    private JFormattedTextField ticksField, interruptField;
-    private static String ticksString, interruptString;
-    private int howTicks, howInterrupt;
-
     private JCheckBox enableInit, tickintInit;
+
+    private JPanel contentPane, mainPane, northPane, southPane, eastPane, westPane, centerPane, infoPane, flagsPane, registerPane;
+
+    private JLabel ticksLabel, interruptLabel, rvrLabel, cvrLabel;
+    private JFormattedTextField ticksField, interruptField, rvrField, cvrField;
+    private static String ticksString, interruptString, rvrString, cvrString;
+    private int howTicks, howInterrupt, rvrValue, cvrValue;
+
+
 
     public GuiSysTick() {
         frame = new JFrame("Systick Simulator ");
@@ -97,8 +101,10 @@ public class GuiSysTick {
     }
 
     private void createNorthPanel() {
+        northPane.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
         createInfoPanel();
         createFlagsPanel();
+        createRegisterPanel();
 
     }
 
@@ -142,6 +148,9 @@ public class GuiSysTick {
         enableInit = new JCheckBox("ENABLE");
         tickintInit = new JCheckBox("TICKINT");
 
+        enableInit.setAlignmentX(Component.CENTER_ALIGNMENT);
+        tickintInit.setAlignmentX(Component.CENTER_ALIGNMENT);
+
         flagsPane.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
         flagsPane.add(enableInit);
         flagsPane.add(tickintInit);
@@ -150,7 +159,36 @@ public class GuiSysTick {
 
     }
     public void createRegisterPanel() {
-        
+        registerPane = new JPanel(new GridLayout(2, 2));
+
+        rvrString = "RVR: ";
+        cvrString = "CVR: ";
+        rvrValue = 5;
+        cvrValue = 6;
+
+        rvrLabel = new JLabel(rvrString);   //Create the labels.
+        cvrLabel = new JLabel(cvrString);
+
+        rvrField = new JFormattedTextField(); //Create the text fields and set them up.
+        rvrField.setValue(rvrValue);
+        rvrField.setEditable(true);
+        rvrField.setForeground(Color.blue);
+
+        cvrField = new JFormattedTextField();
+        cvrField.setValue(cvrValue);
+        cvrField.setEditable(true);
+        cvrField.setForeground(Color.blue);
+
+        rvrLabel.setLabelFor(rvrField);  //Tell accessibility tools about label/textfield pairs.
+        cvrLabel.setLabelFor(cvrField);
+
+        registerPane.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+        registerPane.add(rvrLabel);
+        registerPane.add(rvrField);
+        registerPane.add(cvrLabel);
+        registerPane.add(cvrField);
+
+        northPane.add(registerPane);
     }
 
     private void createEastPanel() {
