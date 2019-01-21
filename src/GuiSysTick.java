@@ -1,4 +1,6 @@
 import javax.swing.*;
+import javax.swing.border.Border;
+import javax.swing.border.EtchedBorder;
 import java.awt.*;
 
 public class GuiSysTick {
@@ -11,13 +13,14 @@ public class GuiSysTick {
     private JButton button1;
     private JCheckBox enableInit, tickintInit;
 
-    private JPanel contentPane, mainPane, northPane, southPane, eastPane, westPane, centerPane, infoPane, flagsPane, registerPane;
+    private JPanel mainPane, northPane, southPane, eastPane, westPane, centerPane, infoPane, flagsPane, registerPane;
 
     private JLabel ticksLabel, interruptLabel, rvrLabel, cvrLabel;
     private JFormattedTextField ticksField, interruptField, rvrField, cvrField;
     private static String ticksString, interruptString, rvrString, cvrString;
     private int howTicks, howInterrupt, rvrValue, cvrValue;
 
+    private Border borderLine, spaceBorder;
 
 
     public GuiSysTick() {
@@ -25,13 +28,14 @@ public class GuiSysTick {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.pack();
         frame.setVisible(true);
-        frame.setSize(600, 600);
+        frame.setSize(800, 600);
         frame.setLocationRelativeTo(null);
         frame.setLayout(new BorderLayout());
+        borderManager();
         createMenuBar();
-        //createContentPane();
         createMainPane();
         refreshGui();
+
     }
 
     private void refreshGui() {
@@ -66,23 +70,6 @@ public class GuiSysTick {
         this.frame.setJMenuBar(menuBar);
     }
 
-    private void createContentPane() {
-        button1 = new JButton("clisk");
-        JButton x1 = new JButton("center");
-        JButton x2 = new JButton("west");
-        JButton x3 = new JButton("north");
-        JButton x4 = new JButton("south");
-        JButton x5 = new JButton("east");
-        contentPane = new JPanel(new BorderLayout());
-        //   contentPane.setBorder(BorderFactory.createEmptyBorder(10, 20, 40, 80));
-        contentPane.add(x1, BorderLayout.CENTER);
-        contentPane.add(x2, BorderLayout.WEST);
-        contentPane.add(x3, BorderLayout.NORTH);
-        contentPane.add(x4, BorderLayout.SOUTH);
-        contentPane.add(x5, BorderLayout.EAST);
-        this.frame.add(contentPane);
-    }
-
     private void createMainPane() {
         mainPane = new JPanel(new BorderLayout());
         northPane = new JPanel(new GridLayout(1, 2));
@@ -100,8 +87,14 @@ public class GuiSysTick {
         createNorthPanel();
     }
 
+    private void borderManager() {
+        borderLine = BorderFactory.createEtchedBorder(EtchedBorder.LOWERED);
+        spaceBorder = BorderFactory.createEmptyBorder(20, 20, 20, 20);
+
+    }
+
     private void createNorthPanel() {
-        northPane.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+        northPane.setBorder(spaceBorder);
         createInfoPanel();
         createFlagsPanel();
         createRegisterPanel();
@@ -132,7 +125,9 @@ public class GuiSysTick {
         ticksLabel.setLabelFor(ticksField);  //Tell accessibility tools about label/textfield pairs.
         interruptLabel.setLabelFor(interruptField);
 
-        infoPane.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+
+        infoPane.setBorder(BorderFactory.createTitledBorder(" Actual Stats "));
+
         infoPane.add(ticksLabel);
         infoPane.add(ticksField);
         infoPane.add(interruptLabel);
@@ -145,19 +140,22 @@ public class GuiSysTick {
         flagsPane = new JPanel();
         flagsPane.setLayout(new BoxLayout(flagsPane, BoxLayout.Y_AXIS));
 
+
         enableInit = new JCheckBox("ENABLE");
         tickintInit = new JCheckBox("TICKINT");
 
         enableInit.setAlignmentX(Component.CENTER_ALIGNMENT);
         tickintInit.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        flagsPane.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+        flagsPane.setBorder(BorderFactory.createTitledBorder("On/Off CSR Flags"));
+
         flagsPane.add(enableInit);
         flagsPane.add(tickintInit);
 
         northPane.add(flagsPane);
 
     }
+
     public void createRegisterPanel() {
         registerPane = new JPanel(new GridLayout(2, 2));
 
@@ -182,7 +180,8 @@ public class GuiSysTick {
         rvrLabel.setLabelFor(rvrField);  //Tell accessibility tools about label/textfield pairs.
         cvrLabel.setLabelFor(cvrField);
 
-        registerPane.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+        registerPane.setBorder(BorderFactory.createTitledBorder(" Set RVR & CVR value "));
+
         registerPane.add(rvrLabel);
         registerPane.add(rvrField);
         registerPane.add(cvrLabel);
@@ -204,7 +203,7 @@ public class GuiSysTick {
     }
 
     private void createCenterPanel() {
-
+        //wykressssss
     }
 }
 
