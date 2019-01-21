@@ -17,4 +17,8 @@ public class Facade implements Observer {
     public void update(Observable observable, Object o) {
 
     }
+
+    public static void main(String[] args) {
+        Facade facade = new Facade();
+    }
 }
