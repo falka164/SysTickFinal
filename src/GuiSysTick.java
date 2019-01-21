@@ -7,12 +7,14 @@ public class GuiSysTick {
     private JMenu fileMenu, viewMenu, helpMenu;
     private JMenuItem exitItem, aboutItem;
     private JButton button1;
-    private JPanel contentPane, mainPane, northPane, southPane, eastPane, westPane, centerPane, infoPane, settingDataPane;
+    private JPanel contentPane, mainPane, northPane, southPane, eastPane, westPane, centerPane, infoPane, flagsPane;
 
     private JLabel ticksLabel, interruptLabel;
     private JFormattedTextField ticksField, interruptField;
     private static String ticksString, interruptString;
     private int howTicks, howInterrupt;
+
+    private JCheckBox enableInit, tickintInit;
 
     public GuiSysTick() {
         frame = new JFrame("Systick Simulator ");
@@ -96,7 +98,7 @@ public class GuiSysTick {
 
     private void createNorthPanel() {
         createInfoPanel();
-
+        createFlagsPanel();
 
     }
 
@@ -133,10 +135,22 @@ public class GuiSysTick {
         northPane.add(infoPane);
     }
 
-    private void createInitialDataPane() {
-        settingDataPane = new JPanel();
-        
+    private void createFlagsPanel() {
+        flagsPane = new JPanel();
+        flagsPane.setLayout(new BoxLayout(flagsPane, BoxLayout.Y_AXIS));
 
+        enableInit = new JCheckBox("ENABLE");
+        tickintInit = new JCheckBox("TICKINT");
+
+        flagsPane.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+        flagsPane.add(enableInit);
+        flagsPane.add(tickintInit);
+
+        northPane.add(flagsPane);
+
+    }
+    public void createRegisterPanel() {
+        
     }
 
     private void createEastPanel() {
