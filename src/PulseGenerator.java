@@ -1,18 +1,30 @@
-import java.awt.event.ActionListener;
+ import java.awt.event.ActionListener;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
-public class PulseGenerator implements IPulseSource, Runnable {
+public class PulseGenerator extends Thread implements IPulseSource {
         byte mode;
-        boolean isUp;
+        
         int delay;
+        boolean isUp;
         int burstValue;
-        SysTick= systick;
-        public PulseGenerator(SysTick systick)
+        SysTick systick;
+        Facade facade;
+        public PulseGenerator(Facade facade)
         {
-            this.systick=systick;
+            this.systick=facade.systick;
+            this.facade=facade;
+            this.delay=1000;
+            this.burstValue=1;
+            mode=CONTINOUS_MODE;
+            this.isUp=false;
         }
     @Override
     public void run(){
-        trigger();
+           while(true)
+               while(!isUp)
+                 this.tick();
+            
     }
         
     @Override
@@ -24,22 +36,42 @@ public class PulseGenerator implements IPulseSource, Runnable {
     public void removeActionListener(ActionListener pl) {
 
     }
-
     @Override
-    public void trigger() {
+    public void trigger()
+    {
+        isUp=true;
+    }
+  
+    public void tick() {
+        
         switch(mode)
         {
-            case 1:{
-                systick.tick();
-                wait(ms);
+            case CONTINOUS_MODE:{
+                this.facade.makeTick(1);
+            try {
+                sleep(delay);
+            } catch (InterruptedException ex) {
+                Logger.getLogger(PulseGenerator.class.getName()).log(Level.SEVERE, null, ex);
+            }
+                
+                
                 break;}
-            case 2:{
-                for(int i=;i<burstValue;i++)
-                    systick.tick();
-                wait(ms);
+            case BURST_MODE:{
+                for(int i=0;i<burstValue;i++)
+                    this.facade.makeTick(1);
+            try {
+                sleep(delay);
+            } catch (InterruptedException ex) {
+                Logger.getLogger(PulseGenerator.class.getName()).log(Level.SEVERE, null, ex);
+            }
+                
+                
                 break;}
         }
-    }
+        
+        
+        }
+    
 
     @Override
     public void setMode(byte mode) {
