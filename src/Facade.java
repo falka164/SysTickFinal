@@ -5,23 +5,37 @@ public class Facade implements Observer, Runnable {
     public SysTick systick;
     public GuiSysTick gui;
     public IPulseSource generator;
-
+    public PulseGenerator generator1;
+    
+    public Thread generatorThread;
     public Facade() {
         systick = new SysTick(this);
-        generator = new PulseGenerator();
+        generator = new PulseGenerator(this);
         gui = new GuiSysTick(this);
-
+        generator1=new PulseGenerator(this);
+        
         updateVariables();
         gui.refreshGui();
-
+        generatorThread=new Thread(generator1);
+        generator.trigger();
+        generatorThread.run();
+        
     }
-
+    public void turnGeneratorOn()
+    {
+        
+    }
     @Override
     public void update(Observable observable, Object o) {
         refreshGui();
     }
 
+<<<<<<< HEAD
     private void refreshGui() {
+=======
+    public void refreshGui()
+    {
+>>>>>>> generator
         updateVariables();
         gui.refreshGui();
     }
