@@ -17,7 +17,7 @@ public class GuiSysTick {
 
     private JRadioButton onGenBtn, offGenBtn;
     private ButtonGroup radioBtnGroup;
-    private JButton generatorModeBtn, oneStepBtn, manyStepBtn, resetSystickBtn, setRegistersBtn;
+    public JButton generatorModeBtn, oneStepBtn, manyStepBtn, resetSystickBtn, setRegistersBtn;
     public JCheckBox enableInit, tickintInit;
 
     private JPanel mainPane, northPane, southPane, eastPane, westPane, centerPane, infoPane,
@@ -36,7 +36,7 @@ public class GuiSysTick {
 
 
     public GuiSysTick(Facade facade) {
-        this.facade=facade;
+        this.facade = facade;
         frame = new JFrame("Systick Simulator ");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.pack();
@@ -129,8 +129,8 @@ public class GuiSysTick {
         ticksLabel = new JLabel(ticksString);
         interruptLabel = new JLabel(interruptString);
 
-        ticksField = createTextFiled("ilosc impulsow", Color.green, false,10);
-        interruptField = createTextFiled("ilosc przerwan", Color.green, false,10);
+        ticksField = createTextFiled("ilosc impulsow", Color.green, false, 10);
+        interruptField = createTextFiled("ilosc przerwan", Color.green, false, 10);
 
         ticksLabel.setLabelFor(ticksField);
         interruptLabel.setLabelFor(interruptField);
@@ -168,17 +168,12 @@ public class GuiSysTick {
     public void createRegisterPanel() {
         registerPane = new JPanel(new GridLayout(3, 2));
 
-        rvrString = " RVR: ";
-        cvrString = " CVR: ";
-        rvrValue = 5;
-        cvrValue = 6;
-
-        rvrLabel = new JLabel(rvrString);   //Create the labels.
-        cvrLabel = new JLabel(cvrString);
+        rvrLabel = new JLabel(" RVR: ");
+        cvrLabel = new JLabel(" CVR: ");
         setRegistersBtn = new JButton("Set");
 
-        rvrField = createTextFiled("", Color.blue, true,10);
-        cvrField = createTextFiled("", Color.blue, true,10);
+        rvrField = createTextFiled("", Color.blue, true, 10);
+        cvrField = createTextFiled("", Color.blue, true, 10);
 
         rvrLabel.setLabelFor(rvrField);
         cvrLabel.setLabelFor(cvrField);
@@ -197,18 +192,18 @@ public class GuiSysTick {
     private void createEastPanel() {
         allDataStates = new JPanel(new GridLayout(2, 2));
 
-        rvrStateLabel = new JLabel(rvrString);
-        cvrStateLabel = new JLabel(cvrString);
+        rvrStateLabel = new JLabel(" RVR: ");
+        cvrStateLabel = new JLabel(" CVR: ");
         countflagStateLabel = new JLabel(" COUNTFLAG: ");
         enableflagStateLabel = new JLabel(" ENABLE: ");
         tickintFlagStateLabel = new JLabel(" TICKINT: ");
         interruptflagStateLabel = new JLabel(" INTERRUPT: ");
 
-        rvrStateField = createTextFiled("", Color.orange, false,6);
-        cvrStateField = createTextFiled("", Color.orange, false,6);
-        countflagStateField = createTextFiled("", Color.red, false,6);
-        enableflagStateField = createTextFiled("", Color.blue, false,6);
-        tickintflagStateField = createTextFiled("", Color.blue, false,6);
+        rvrStateField = createTextFiled("set rvr", Color.magenta, false, 6);
+        cvrStateField = createTextFiled("set cvr", Color.magenta, false, 6);
+        countflagStateField = createTextFiled("", Color.red, false, 6);
+        enableflagStateField = createTextFiled("", Color.blue, false, 6);
+        tickintflagStateField = createTextFiled("", Color.blue, false, 6);
         interruptflagStateField = createTextFiled("", Color.blue, false, 6);
 
         rvrStateLabel.setLabelFor(rvrStateField);
@@ -223,12 +218,19 @@ public class GuiSysTick {
 
         allDataStates.add(rvrStateLabel);
         allDataStates.add(rvrStateField);
+
         allDataStates.add(cvrStateLabel);
         allDataStates.add(cvrStateField);
+
         allDataStates.add(countflagStateLabel);
         allDataStates.add(countflagStateField);
+
         allDataStates.add(enableflagStateLabel);
         allDataStates.add(enableflagStateField);
+
+        allDataStates.add(tickintFlagStateLabel);
+        allDataStates.add(tickintflagStateField);
+
         allDataStates.add(interruptflagStateLabel);
         allDataStates.add(interruptflagStateField);
 
@@ -321,14 +323,29 @@ public class GuiSysTick {
     }
 
     private void makeListeners() {
-        oneStepBtn.addActionListener((event)-> facade.makeTick(1));
+        oneStepBtn.addActionListener((event) -> facade.makeTick(1));
 
-        manyStepBtn.addActionListener((event)->facade.makeTick(parseInt(this.manyStepField.getValue().toString())));
+        manyStepBtn.addActionListener((event) -> facade.makeTick(parseInt(this.manyStepField.getValue().toString())));
 
-        resetSystickBtn.addActionListener((event)->facade.resetSysTick());
+        resetSystickBtn.addActionListener((event) -> facade.resetSysTick());
 
-        tickintInit.addActionListener((event)->facade.setTickInt());
+        tickintInit.addActionListener((event) -> facade.setTickInt());
+
+        enableInit.addActionListener((event) -> facade.setEnable());
+
+        setRegistersBtn.addActionListener((event) -> facade.setrvr());
     }
+
+    public void showErrorMsg() {
+        JFrame frameerr = new JFrame();
+        JOptionPane.showMessageDialog(frameerr,
+                "Eggs are not supposed to be green.",
+                "Inane warning",
+                JOptionPane.WARNING_MESSAGE);
+
+    }
+
+
 }
 
 

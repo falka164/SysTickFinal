@@ -72,4 +72,25 @@ public class Facade implements Observer, Runnable {
         systick.setTickint(gui.tickintInit.isSelected());
         refreshGui();
     }
+       public void setEnable() {
+        systick.setEnableFlag(gui.enableInit.isSelected());
+        refreshGui();
+    }
+
+    public void setrvr() {
+        if (gui.rvrField == null) {
+            gui.showErrorMsg();
+
+        } else if (gui.rvrField.getValue() instanceof char[]) {
+            gui.showErrorMsg();
+
+        } else {
+            gui.rvrStateField.setValue(gui.rvrField.getValue());
+        }
+    }
+
+    public void setcvr(){
+
+    }
+
 }
