@@ -11,6 +11,7 @@ public class Facade implements Observer, Runnable {
     public GuiSysTick gui;
     public PulseGenerator generator;
     public int ticksDone;
+    public int interruptDone;
     public Thread generatorThread;
 
     public Facade() {
@@ -18,6 +19,7 @@ public class Facade implements Observer, Runnable {
         gui = new GuiSysTick(this);
         generator = new PulseGenerator(this);
         ticksDone = 0;
+        interruptDone = 0;
         updateVariables();
         gui.refreshGui();
         generatorThread = new Thread(generator);
@@ -37,11 +39,19 @@ public class Facade implements Observer, Runnable {
 
     public void makeTick(int x) {
         for (int i = 0; i < x; i++) {
-            if (systick.isEnableFlag())
+            if (systick.isEnableFlag()) {
                 ticksDone++;
+            }
             systick.tick();
-
         }
+    }
+
+    public void howManyInterrupt() {
+       String  val = gui.interruptflagStateField.getValue().toString();
+        if (val.equals("true")) {
+            interruptDone++;
+        }
+        gui.interruptField.setValue(interruptDone);
     }
 
     public static void main(String[] args) {
@@ -60,6 +70,7 @@ public class Facade implements Observer, Runnable {
         gui.tickintflagStateField.setValue(systick.isTickintFlag());
         gui.interruptflagStateField.setValue(systick.getInterrupt());
         gui.ticksField.setValue(ticksDone);
+        gui.interruptField.setValue(interruptDone);
     }
 
     public void resetSysTick() {

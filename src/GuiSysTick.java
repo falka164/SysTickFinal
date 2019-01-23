@@ -9,7 +9,7 @@ import java.awt.event.KeyListener;
 import static java.lang.Integer.parseInt;
 
 public class GuiSysTick {
-
+    //region VARIABLES
     private Facade facade;
     private JFrame frame;
 
@@ -38,6 +38,7 @@ public class GuiSysTick {
 
     public JLabel generatorLed;
 
+    //endregion
     public GuiSysTick(Facade facade) {
         this.facade = facade;
         frame = new JFrame("Systick Simulator ");
@@ -51,11 +52,11 @@ public class GuiSysTick {
         createMenuBar();
         createMainPane();
         createWestPanel();
-        onlyDigit=(new KeyListener() {
+        onlyDigit = (new KeyListener() {
             @Override
             public void keyTyped(KeyEvent keyEvent) {
-                char c=keyEvent.getKeyChar();
-                int charId=(int)c;
+                char c = keyEvent.getKeyChar();
+                int charId = (int) c;
                 if (!(charId >= 48 && charId <= 57)) {
                     keyEvent.consume();
                 }
@@ -148,13 +149,13 @@ public class GuiSysTick {
         ticksString = "Ilość ticków: ";
         interruptString = "Ilość przerwań: ";
         howTicks = 0;
-        howInterrupt = 5;
+        howInterrupt = 0;
 
         ticksLabel = new JLabel(ticksString);
         interruptLabel = new JLabel(interruptString);
 
         ticksField = createTextFiled("0", Color.green, false, 10);
-        interruptField = createTextFiled("ilosc przerwan", Color.green, false, 10);
+        interruptField = createTextFiled("0", Color.green, false, 10);
 
         ticksLabel.setLabelFor(ticksField);
         interruptLabel.setLabelFor(interruptField);
@@ -365,6 +366,8 @@ public class GuiSysTick {
 
         generatorModeBtn.addActionListener((event) -> facade.changeGenMode());
 
+        interruptflagStateField.addPropertyChangeListener((event) -> facade.howManyInterrupt());
+
         delayField.addKeyListener(onlyDigit);
         burstField.addKeyListener(onlyDigit);
         rvrField.addKeyListener(onlyDigit);
@@ -390,7 +393,6 @@ public class GuiSysTick {
         });
 
     }
-
 
 
 }
