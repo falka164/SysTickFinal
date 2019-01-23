@@ -1,44 +1,46 @@
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
 import java.util.Observable;
 import java.util.Observer;
+
+import static java.lang.Integer.parseInt;
 
 public class Facade implements Observer, Runnable {
     public SysTick systick;
     public GuiSysTick gui;
-    public IPulseSource generator;
-    public PulseGenerator generator1;
-    
+    public PulseGenerator generator;
+    public int ticksDone;
     public Thread generatorThread;
+
     public Facade() {
         systick = new SysTick(this);
-        generator = new PulseGenerator(this);
         gui = new GuiSysTick(this);
-        generator1=new PulseGenerator(this);
-        
+        generator = new PulseGenerator(this);
+        ticksDone = 0;
         updateVariables();
         gui.refreshGui();
-        generatorThread=new Thread(generator1);
-        generator.trigger();
-        generatorThread.run();
-        
+        generatorThread = new Thread(generator);
+        generatorThread.start();
+
     }
-    public void turnGeneratorOn()
-    {
-        
-    }
+
     @Override
     public void update(Observable observable, Object o) {
         refreshGui();
     }
 
-    public void refreshGui()
-    {
+    public void refreshGui() {
         updateVariables();
         gui.refreshGui();
     }
 
     public void makeTick(int x) {
-        for (int i = 0; i <x; i++) {
+        for (int i = 0; i < x; i++) {
+            if (systick.isEnableFlag())
+                ticksDone++;
             systick.tick();
+
         }
     }
 
@@ -47,19 +49,20 @@ public class Facade implements Observer, Runnable {
     }
 
     @Override
-    public void run(){}
+    public void run() {
+    }
 
-    public void updateVariables()
-    {
+    public void updateVariables() {
         gui.rvrStateField.setValue(systick.getRvr());
         gui.cvrStateField.setValue(systick.getCvr());
         gui.countflagStateField.setValue(systick.isCountFlag());
         gui.enableflagStateField.setValue(systick.isEnableFlag());
+        gui.tickintflagStateField.setValue(systick.isTickintFlag());
         gui.interruptflagStateField.setValue(systick.getInterrupt());
+        gui.ticksField.setValue(ticksDone);
     }
 
-    public void resetSysTick()
-    {
+    public void resetSysTick() {
         systick.setCvr(10);
         systick.setRvr(10);
         systick.setInterrupt(false);
@@ -72,25 +75,54 @@ public class Facade implements Observer, Runnable {
         systick.setTickint(gui.tickintInit.isSelected());
         refreshGui();
     }
-       public void setEnable() {
+
+    public void setEnable() {
         systick.setEnableFlag(gui.enableInit.isSelected());
         refreshGui();
     }
 
-    public void setrvr() {
-        if (gui.rvrField == null) {
-            gui.showErrorMsg();
+    public void rvrRegset() {
+        int val = parseInt(gui.rvrField.getValue().toString());
 
-        } else if (gui.rvrField.getValue() instanceof char[]) {
-            gui.showErrorMsg();
+        gui.rvrStateField.setValue(val);
+        systick.setRvr(val);
 
+    }
+
+    public void cvrRegset() {
+        int val = parseInt(gui.cvrField.getValue().toString());
+
+        gui.cvrStateField.setValue(val);
+        systick.setCvr(val);
+    }
+
+    public void setRegisters() {
+        rvrRegset();
+        cvrRegset();
+    }
+
+    public void enableGenerator() {
+        generator.trigger();
+        gui.generatorLed.setForeground(Color.green);
+
+    }
+
+    public void disableGenerator() {
+        generator.halt();
+        gui.generatorLed.setForeground(Color.gray);
+    }
+
+    public void setDelay(int ms) {
+        generator.setPulseDelay(ms);
+    }
+
+    public void changeGenMode() {
+        if (generator.mode == (byte) 1) {
+            gui.generatorModeBtn.setText("Set to Burst");
+            generator.mode = (byte) 0;
         } else {
-            gui.rvrStateField.setValue(gui.rvrField.getValue());
+            gui.generatorModeBtn.setText("Set to Continous");
+            generator.mode = 1;
         }
     }
-
-    public void setcvr(){
-
-    }
-
 }

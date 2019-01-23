@@ -3,6 +3,8 @@ import javax.swing.border.Border;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EtchedBorder;
 import java.awt.*;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 
 import static java.lang.Integer.parseInt;
 
@@ -19,11 +21,11 @@ public class GuiSysTick {
     private ButtonGroup radioBtnGroup;
     public JButton generatorModeBtn, oneStepBtn, manyStepBtn, resetSystickBtn, setRegistersBtn;
     public JCheckBox enableInit, tickintInit;
-
+    private KeyListener onlyDigit;
     private JPanel mainPane, northPane, southPane, eastPane, westPane, centerPane, infoPane,
             flagsPane, registerPane, allDataStates, onOffGenPanel, buttonPanel;
 
-    private JLabel ticksLabel, interruptLabel, rvrLabel, cvrLabel, rvrStateLabel,
+    public JLabel ticksLabel, interruptLabel, rvrLabel, cvrLabel, rvrStateLabel,
             cvrStateLabel, enableflagStateLabel, countflagStateLabel, tickintFlagStateLabel,
             interruptflagStateLabel;
     public JFormattedTextField ticksField, interruptField, rvrField, cvrField,
@@ -34,6 +36,7 @@ public class GuiSysTick {
 
     private Border borderLine, spaceBorder;
 
+    public JLabel generatorLed;
 
     public GuiSysTick(Facade facade) {
         this.facade = facade;
@@ -48,6 +51,27 @@ public class GuiSysTick {
         createMenuBar();
         createMainPane();
         createWestPanel();
+        onlyDigit=(new KeyListener() {
+            @Override
+            public void keyTyped(KeyEvent keyEvent) {
+                char c=keyEvent.getKeyChar();
+                int charId=(int)c;
+                if (!(charId >= 48 && charId <= 57)) {
+                    keyEvent.consume();
+                }
+
+            }
+
+            @Override
+            public void keyPressed(KeyEvent e) {
+
+            }
+
+            @Override
+            public void keyReleased(KeyEvent keyEvent) {
+
+            }
+        });
         makeListeners();
         refreshGui();
 
@@ -129,7 +153,7 @@ public class GuiSysTick {
         ticksLabel = new JLabel(ticksString);
         interruptLabel = new JLabel(interruptString);
 
-        ticksField = createTextFiled("ilosc impulsow", Color.green, false, 10);
+        ticksField = createTextFiled("0", Color.green, false, 10);
         interruptField = createTextFiled("ilosc przerwan", Color.green, false, 10);
 
         ticksLabel.setLabelFor(ticksField);
@@ -264,15 +288,15 @@ public class GuiSysTick {
         southPane.setLayout(new FlowLayout());
         southPane.add(onOffGenPanel);
 
-        JLabel generatorLed = new JLabel("•");
-        generatorLed.setForeground(Color.red);
+        generatorLed = new JLabel("•");
+        generatorLed.setForeground(Color.gray);
         generatorLed.setFont(new Font(Font.SERIF, Font.PLAIN, 100));
 
         southPane.add(generatorLed);
         generatorModeBtn = new JButton("Set to Burst");
         generatorModeBtn.setSize(new Dimension(100, 100));
 
-        delayField = createTextFiled("", Color.green, true, 10);
+        delayField = createTextFiled("1000", Color.green, true, 10);
 
         JLabel delayInfo = new JLabel("Delay [ms]");
         JLabel burstInfo = new JLabel("Burst value");
@@ -333,17 +357,40 @@ public class GuiSysTick {
 
         enableInit.addActionListener((event) -> facade.setEnable());
 
-        setRegistersBtn.addActionListener((event) -> facade.setrvr());
+        setRegistersBtn.addActionListener((event) -> facade.setRegisters());
+
+        onGenBtn.addActionListener((event) -> facade.enableGenerator());
+
+        offGenBtn.addActionListener((event) -> facade.disableGenerator());
+
+        generatorModeBtn.addActionListener((event) -> facade.changeGenMode());
+
+        delayField.addKeyListener(onlyDigit);
+        burstField.addKeyListener(onlyDigit);
+        rvrField.addKeyListener(onlyDigit);
+        cvrField.addKeyListener(onlyDigit);
+        manyStepField.addKeyListener(onlyDigit);
+
+        int x = parseInt(this.delayField.getValue().toString());
+        delayField.addKeyListener(new KeyListener() {
+            @Override
+            public void keyTyped(KeyEvent keyEvent) {
+
+            }
+
+            @Override
+            public void keyPressed(KeyEvent keyEvent) {
+
+            }
+
+            @Override
+            public void keyReleased(KeyEvent keyEvent) {
+                facade.setDelay(parseInt(delayField.getValue().toString()));
+            }
+        });
+
     }
 
-    public void showErrorMsg() {
-        JFrame frameerr = new JFrame();
-        JOptionPane.showMessageDialog(frameerr,
-                "Eggs are not supposed to be green.",
-                "Inane warning",
-                JOptionPane.WARNING_MESSAGE);
-
-    }
 
 
 }

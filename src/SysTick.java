@@ -5,18 +5,17 @@ public class SysTick extends Observable {
     private boolean enableFlag, tickintFlag, countFlag, interrupt;
 
     public SysTick(Facade facade) {
-        cvr = 10;
-        rvr = 10;
+
         tickintFlag = false;
-        enableFlag = true;
+        enableFlag = false;
         countFlag = false;
         interrupt = false;
         this.addObserver(facade);
     }
 
-    public void setRvr(int rvr) {
+    public void setRvr(int rvrSet) {
         if (rvr >= 0 && rvr < (1 << 24))
-            this.rvr = rvr;
+            rvr = rvrSet;
 
     }
 
@@ -24,9 +23,9 @@ public class SysTick extends Observable {
         return this.rvr;
     }
 
-    public void setCvr(int cvr) {
+    public void setCvr(int cvrSet) {
         countFlag = false;
-        this.cvr = cvr;
+        cvr = cvrSet;
 
     }
 
@@ -34,9 +33,13 @@ public class SysTick extends Observable {
         return this.cvr;
     }
 
-    public void setTickint(Boolean tickint) {
-        this.tickintFlag = tickint;
+    public void setTickint(boolean tickint) {
+        tickintFlag = tickint;
 
+    }
+
+    public boolean isTickintFlag() {
+        return tickintFlag;
     }
 
     public void setEnableFlag(boolean enable) {
@@ -49,13 +52,13 @@ public class SysTick extends Observable {
         return enableFlag;
     }
 
+
     public boolean isCountFlag() {
         return countFlag;
     }
 
     public boolean checkInterrupt() {
-        if ((countFlag == true) && (tickintFlag == true)) {
-            countFlag=false;//count flag reset
+        if (cvr == 0 && (tickintFlag == true)) {
             return true;
         } else return false;
     }
@@ -68,22 +71,24 @@ public class SysTick extends Observable {
                 "\nRVR = " + rvr);
 
     }
-    private void doATick(){
+
+    private void doATick() {
 
         if (!enableFlag) return;
         if (cvr == 0) {
-            cvr = rvr;
-            countFlag = true;
+
             interrupt = checkInterrupt();
-
-
+            cvr = rvr;
+            countFlag = false;
             return;
         }
         cvr--;
-
+        countFlag = false;
+        if(cvr==0)countFlag = true;
         interrupt = checkInterrupt();
 
     }
+
     public void tick() {
         doATick();
         setChanged();
@@ -94,8 +99,8 @@ public class SysTick extends Observable {
     public boolean getInterrupt() {
         return interrupt;
     }
-    public void setInterrupt(boolean interrupt)
-    {
-        this.interrupt=interrupt;
+
+    public void setInterrupt(boolean interrupt) {
+        this.interrupt = interrupt;
     }
 }
