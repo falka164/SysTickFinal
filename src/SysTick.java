@@ -58,9 +58,7 @@ public class SysTick extends Observable {
     }
 
     public boolean checkInterrupt() {
-        if (cvr == 0 && (tickintFlag == true)) {
-            return true;
-        } else return false;
+        return cvr == 0 && (tickintFlag);
     }
 
     public String toString() {

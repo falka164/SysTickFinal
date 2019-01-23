@@ -1,29 +1,32 @@
 import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.border.CompoundBorder;
+import javax.swing.border.EmptyBorder;
 import javax.swing.border.EtchedBorder;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 
 import static java.lang.Integer.parseInt;
 
 public class GuiSysTick {
+
     //region VARIABLES
     private Facade facade;
     private JFrame frame;
 
-    private JMenuBar menuBar;
-    private JMenu fileMenu, viewMenu, helpMenu;
-    private JMenuItem exitItem, aboutItem;
-
-    private JRadioButton onGenBtn, offGenBtn;
-    private ButtonGroup radioBtnGroup;
+    public JRadioButton onGenBtn, offGenBtn;
     public JButton generatorModeBtn, oneStepBtn, manyStepBtn, resetSystickBtn, setRegistersBtn;
+    private ButtonGroup radioBtnGroup;
     public JCheckBox enableInit, tickintInit;
     private KeyListener onlyDigit;
-    private JPanel mainPane, northPane, southPane, eastPane, westPane, centerPane, infoPane,
-            flagsPane, registerPane, allDataStates, onOffGenPanel, buttonPanel;
+    private JPanel northPane;
+    private JPanel southPane;
+    private JPanel eastPane;
+    private JPanel westPane, buttonPanel, mainPane,centerPane;
 
     public JLabel ticksLabel, interruptLabel, rvrLabel, cvrLabel, rvrStateLabel,
             cvrStateLabel, enableflagStateLabel, countflagStateLabel, tickintFlagStateLabel,
@@ -31,27 +34,39 @@ public class GuiSysTick {
     public JFormattedTextField ticksField, interruptField, rvrField, cvrField,
             rvrStateField, cvrStateField, enableflagStateField, countflagStateField,
             tickintflagStateField, interruptflagStateField, delayField, burstField, manyStepField;
-    private static String ticksString, interruptString, rvrString, cvrString;
-    private int howTicks, howInterrupt, rvrValue, cvrValue;
 
-    private Border borderLine, spaceBorder;
-
+    private Border spaceBorder;
+    public GraphPanel graph;
     public JLabel generatorLed;
+    private JLabel modeStateLabel;
+    public JFormattedTextField modeStateField;
+    private JLabel delayInfo;
+    private JLabel burstInfo;
+    private JPanel onOffGenPanel;
+    public JButton resetGeneratorBtn;
+    private JPanel generatorSettingPane;
+    private JPanel generatorButtonPane;
+    private JPanel generatorDelayPane, genertorBurstPane;
 
     //endregion
+
     public GuiSysTick(Facade facade) {
         this.facade = facade;
+
         frame = new JFrame("Systick Simulator ");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.pack();
         frame.setVisible(true);
-        frame.setSize(800, 600);
+        frame.setSize(800, 650);
+        frame.setResizable(false);
         frame.setLocationRelativeTo(null);
         frame.setLayout(new BorderLayout());
+
         borderManager();
         createMenuBar();
         createMainPane();
         createWestPanel();
+        createAndShowGraph();
         onlyDigit = (new KeyListener() {
             @Override
             public void keyTyped(KeyEvent keyEvent) {
@@ -60,7 +75,6 @@ public class GuiSysTick {
                 if (!(charId >= 48 && charId <= 57)) {
                     keyEvent.consume();
                 }
-
             }
 
             @Override
@@ -75,7 +89,6 @@ public class GuiSysTick {
         });
         makeListeners();
         refreshGui();
-
     }
 
     public void refreshGui() {
@@ -84,12 +97,12 @@ public class GuiSysTick {
     }
 
     private void createMenuBar() {
-        menuBar = new JMenuBar();
-        fileMenu = new JMenu("File");
-        viewMenu = new JMenu("View");
-        helpMenu = new JMenu("Help");
-        exitItem = new JMenuItem("Exit");
-        aboutItem = new JMenuItem("About");
+        JMenuBar menuBar = new JMenuBar();
+        JMenu fileMenu = new JMenu("File");
+        JMenu viewMenu = new JMenu("View");
+        JMenu helpMenu = new JMenu("Help");
+        JMenuItem exitItem = new JMenuItem("Exit");
+        JMenuItem aboutItem = new JMenuItem("About");
 
         exitItem.setToolTipText("exit aplication");
         exitItem.addActionListener((event) -> System.exit(0));
@@ -130,7 +143,6 @@ public class GuiSysTick {
     }
 
     private void borderManager() {
-        borderLine = BorderFactory.createEtchedBorder(EtchedBorder.LOWERED);
         spaceBorder = BorderFactory.createEmptyBorder(20, 20, 20, 20);
 
     }
@@ -144,12 +156,10 @@ public class GuiSysTick {
     }
 
     private void createInfoPanel() {
-        infoPane = new JPanel(new GridLayout(2, 2));
+        JPanel infoPane = new JPanel(new GridLayout(2, 2));
 
-        ticksString = "Ilość ticków: ";
-        interruptString = "Ilość przerwań: ";
-        howTicks = 0;
-        howInterrupt = 0;
+        String ticksString = "Ticks: ";
+        String interruptString = "Interrupts: ";
 
         ticksLabel = new JLabel(ticksString);
         interruptLabel = new JLabel(interruptString);
@@ -160,7 +170,7 @@ public class GuiSysTick {
         ticksLabel.setLabelFor(ticksField);
         interruptLabel.setLabelFor(interruptField);
 
-        infoPane.setBorder(BorderFactory.createTitledBorder(" Actual Stats "));
+        infoPane.setBorder(BorderFactory.createTitledBorder(" Actual Stats Counter"));
 
         infoPane.add(ticksLabel);
         infoPane.add(ticksField);
@@ -171,7 +181,7 @@ public class GuiSysTick {
     }
 
     private void createFlagsPanel() {
-        flagsPane = new JPanel();
+        JPanel flagsPane = new JPanel();
         flagsPane.setLayout(new BoxLayout(flagsPane, BoxLayout.Y_AXIS));
 
 
@@ -191,14 +201,14 @@ public class GuiSysTick {
     }
 
     public void createRegisterPanel() {
-        registerPane = new JPanel(new GridLayout(3, 2));
+        JPanel registerPane = new JPanel(new GridLayout(3, 2));
 
         rvrLabel = new JLabel(" RVR: ");
         cvrLabel = new JLabel(" CVR: ");
         setRegistersBtn = new JButton("Set");
 
-        rvrField = createTextFiled("", Color.blue, true, 10);
-        cvrField = createTextFiled("", Color.blue, true, 10);
+        rvrField = createTextFiled("10", Color.blue, true, 10);
+        cvrField = createTextFiled("5", Color.blue, true, 10);
 
         rvrLabel.setLabelFor(rvrField);
         cvrLabel.setLabelFor(cvrField);
@@ -215,7 +225,7 @@ public class GuiSysTick {
     }
 
     private void createEastPanel() {
-        allDataStates = new JPanel(new GridLayout(2, 2));
+        JPanel allDataStates = new JPanel(new GridLayout(2, 2));
 
         rvrStateLabel = new JLabel(" RVR: ");
         cvrStateLabel = new JLabel(" CVR: ");
@@ -223,13 +233,15 @@ public class GuiSysTick {
         enableflagStateLabel = new JLabel(" ENABLE: ");
         tickintFlagStateLabel = new JLabel(" TICKINT: ");
         interruptflagStateLabel = new JLabel(" INTERRUPT: ");
+        modeStateLabel = new JLabel(" GENERATOR MODE: ");
 
-        rvrStateField = createTextFiled("set rvr", Color.magenta, false, 6);
-        cvrStateField = createTextFiled("set cvr", Color.magenta, false, 6);
+        rvrStateField = createTextFiled("", Color.magenta, false, 6);
+        cvrStateField = createTextFiled("", Color.magenta, false, 6);
         countflagStateField = createTextFiled("", Color.red, false, 6);
         enableflagStateField = createTextFiled("", Color.blue, false, 6);
         tickintflagStateField = createTextFiled("", Color.blue, false, 6);
         interruptflagStateField = createTextFiled("", Color.blue, false, 6);
+        modeStateField = createTextFiled("continuous", Color.blue, false, 6);
 
         rvrStateLabel.setLabelFor(rvrStateField);
         cvrStateLabel.setLabelFor(cvrStateField);
@@ -237,27 +249,39 @@ public class GuiSysTick {
         enableflagStateLabel.setLabelFor(enableflagStateField);
         tickintFlagStateLabel.setLabelFor(tickintflagStateField);
         interruptflagStateLabel.setLabelFor(interruptflagStateField);
+        modeStateLabel.setLabelFor(modeStateField);
 
-        allDataStates.setBorder(BorderFactory.createTitledBorder("SysTick State Info"));
+        allDataStates.setBorder(BorderFactory.createTitledBorder("Systick State Info"));
         allDataStates.setLayout(new BoxLayout(allDataStates, BoxLayout.Y_AXIS));
 
+        allDataStates.add(Box.createRigidArea(new Dimension(0, 10)));
         allDataStates.add(rvrStateLabel);
         allDataStates.add(rvrStateField);
+        allDataStates.add(Box.createRigidArea(new Dimension(0, 5)));
 
         allDataStates.add(cvrStateLabel);
         allDataStates.add(cvrStateField);
+        allDataStates.add(Box.createRigidArea(new Dimension(0, 5)));
 
         allDataStates.add(countflagStateLabel);
         allDataStates.add(countflagStateField);
+        allDataStates.add(Box.createRigidArea(new Dimension(0, 5)));
 
         allDataStates.add(enableflagStateLabel);
         allDataStates.add(enableflagStateField);
+        allDataStates.add(Box.createRigidArea(new Dimension(0, 5)));
 
         allDataStates.add(tickintFlagStateLabel);
         allDataStates.add(tickintflagStateField);
+        allDataStates.add(Box.createRigidArea(new Dimension(0, 5)));
 
         allDataStates.add(interruptflagStateLabel);
         allDataStates.add(interruptflagStateField);
+        allDataStates.add(Box.createRigidArea(new Dimension(0, 20)));
+
+        allDataStates.add(modeStateLabel);
+        allDataStates.add(modeStateField);
+        allDataStates.add(Box.createRigidArea(new Dimension(0, 5)));
 
         eastPane.add(allDataStates);
 
@@ -267,50 +291,101 @@ public class GuiSysTick {
     private void createSouthPanel() {
         southPane.setBorder(BorderFactory.createTitledBorder(" Generator "));
 
+        southPane.setLayout(new FlowLayout(FlowLayout.CENTER, 0, 0));
+
         generatorOnOffPanel();
+        createLedPanel();
+        createGeneratorSettingsPanel();
+        createGeneratorButtonPanel();
+
 
     }
 
     private void generatorOnOffPanel() {
         onOffGenPanel = new JPanel();
-        onOffGenPanel.setLayout(new BoxLayout(onOffGenPanel, BoxLayout.Y_AXIS));
         radioBtnGroup = new ButtonGroup();
 
         onGenBtn = new JRadioButton(" ON ");
         offGenBtn = new JRadioButton("OFF");
 
+        onOffGenPanel.setLayout(new BoxLayout(onOffGenPanel, BoxLayout.Y_AXIS));
+
+        offGenBtn.setSelected(true);
+
         radioBtnGroup.add(onGenBtn);
         radioBtnGroup.add(offGenBtn);
-        offGenBtn.setSelected(true);
+
         onOffGenPanel.add(onGenBtn);
         onOffGenPanel.add(offGenBtn);
 
-
-        southPane.setLayout(new FlowLayout());
         southPane.add(onOffGenPanel);
+    }
 
+    private void createLedPanel() {
         generatorLed = new JLabel("•");
         generatorLed.setForeground(Color.gray);
         generatorLed.setFont(new Font(Font.SERIF, Font.PLAIN, 100));
 
         southPane.add(generatorLed);
+
+    }
+
+    private void createGeneratorSettingsPanel() {
+        generatorSettingPane = new JPanel();
+        generatorDelayPane = new JPanel();
+        genertorBurstPane = new JPanel();
+
+        delayInfo = new JLabel("Delay [ms]");
+        burstInfo = new JLabel("Burst value");
+
+        burstField = createTextFiled("0", Color.green, false, 10);
+        delayField = createTextFiled("1000", Color.green, false, 10);
+
+        delayInfo.setAlignmentX(Component.CENTER_ALIGNMENT);
+        burstInfo.setAlignmentX(Component.CENTER_ALIGNMENT);
+        delayField.setAlignmentX(Component.CENTER_ALIGNMENT);
+        burstField.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        generatorDelayPane.setLayout(new BoxLayout(generatorDelayPane, BoxLayout.Y_AXIS));
+        genertorBurstPane.setLayout(new BoxLayout(genertorBurstPane, BoxLayout.Y_AXIS));
+
+        generatorDelayPane.add(delayInfo);
+        generatorDelayPane.add(Box.createRigidArea(new Dimension(0, 5)));
+        generatorDelayPane.add(delayField);
+
+        genertorBurstPane.add(burstInfo);
+        genertorBurstPane.add(Box.createRigidArea(new Dimension(0, 5)));
+        genertorBurstPane.add(burstField);
+
+        generatorSettingPane.add(generatorDelayPane);
+        generatorSettingPane.add(genertorBurstPane);
+
+        southPane.add(generatorSettingPane);
+
+    }
+
+    private void createGeneratorButtonPanel() {
+        generatorButtonPane = new JPanel();
+
         generatorModeBtn = new JButton("Set to Burst");
+        resetGeneratorBtn = new JButton("RESET GENERATOR");
+
         generatorModeBtn.setSize(new Dimension(100, 100));
+        generatorModeBtn.setAlignmentX(Component.CENTER_ALIGNMENT);
+        generatorModeBtn.setVisible(false);
+        resetGeneratorBtn.setVisible(false);
 
-        delayField = createTextFiled("1000", Color.green, true, 10);
+        resetGeneratorBtn.setSize(new Dimension(100, 100));
+        resetGeneratorBtn.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        JLabel delayInfo = new JLabel("Delay [ms]");
-        JLabel burstInfo = new JLabel("Burst value");
-
-        burstField = createTextFiled("", Color.green, true, 10);
+        generatorButtonPane.setLayout(new BoxLayout(generatorButtonPane, BoxLayout.Y_AXIS));
 
 
-        southPane.add(generatorModeBtn);
-        southPane.add(delayInfo);
+        generatorButtonPane.add(generatorModeBtn);
+        generatorButtonPane.add(Box.createRigidArea(new Dimension(0, 5)));
+        generatorButtonPane.add(resetGeneratorBtn);
 
-        southPane.add(delayField);
-        southPane.add(burstInfo);
-        southPane.add(burstField);
+        southPane.add(generatorButtonPane);
 
     }
 
@@ -323,14 +398,27 @@ public class GuiSysTick {
         manyStepBtn = new JButton("MANY IMPULS");
         resetSystickBtn = new JButton("RESET SYSTICK");
 
+
+        oneStepBtn.setAlignmentX(Component.CENTER_ALIGNMENT);
+        manyStepBtn.setAlignmentX(Component.CENTER_ALIGNMENT);
+        resetSystickBtn.setAlignmentX(Component.CENTER_ALIGNMENT);
+
         manyStepField = createTextFiled("", Color.green, true, 2);
 
+        buttonPanel.add(Box.createRigidArea(new Dimension(0, 60)));
         buttonPanel.add(oneStepBtn);
+        buttonPanel.add(Box.createRigidArea(new Dimension(0, 20)));
+
         buttonPanel.add(manyStepBtn);
+        buttonPanel.add(Box.createRigidArea(new Dimension(0, 5)));
+
         buttonPanel.add(manyStepField);
+        buttonPanel.add(Box.createRigidArea(new Dimension(0, 20)));
+
         buttonPanel.add(resetSystickBtn);
 
         westPane.add(buttonPanel, BorderLayout.WEST);
+        westPane.setBorder(BorderFactory.createTitledBorder(" Manual Ticks "));
 
     }
 
@@ -352,7 +440,7 @@ public class GuiSysTick {
 
         manyStepBtn.addActionListener((event) -> facade.makeTick(parseInt(this.manyStepField.getValue().toString())));
 
-        resetSystickBtn.addActionListener((event) -> facade.resetSysTick());
+        resetSystickBtn.addActionListener((event) -> facade.reset());
 
         tickintInit.addActionListener((event) -> facade.setTickInt());
 
@@ -367,6 +455,10 @@ public class GuiSysTick {
         generatorModeBtn.addActionListener((event) -> facade.changeGenMode());
 
         interruptflagStateField.addPropertyChangeListener((event) -> facade.howManyInterrupt());
+
+        resetSystickBtn.addActionListener((event) -> facade.reset());
+
+        resetGeneratorBtn.addActionListener((event) -> facade.resetGenerator());
 
         delayField.addKeyListener(onlyDigit);
         burstField.addKeyListener(onlyDigit);
@@ -391,6 +483,18 @@ public class GuiSysTick {
                 facade.setDelay(parseInt(delayField.getValue().toString()));
             }
         });
+
+    }
+
+    private void createAndShowGraph() {
+        List<Double> scores = new ArrayList<>();
+
+        graph = new GraphPanel(scores);
+        Dimension centerPaneDim=centerPane.getSize();
+        graph.setPreferredSize(new Dimension(450,330));
+        centerPane.add(graph);
+
+
 
     }
 
