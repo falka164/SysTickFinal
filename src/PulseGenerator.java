@@ -29,7 +29,7 @@ public class PulseGenerator extends Thread implements IPulseSource {
                 e.printStackTrace();
             }
             while (isUp) {
-             //   System.out.println("Generator up " + isUp);
+                //   System.out.println("Generator up " + isUp);
                 this.tick();
             }
         }
@@ -61,8 +61,6 @@ public class PulseGenerator extends Thread implements IPulseSource {
                 } catch (InterruptedException ex) {
                     Logger.getLogger(PulseGenerator.class.getName()).log(Level.SEVERE, null, ex);
                 }
-
-
                 break;
             }
             case BURST_MODE: {
@@ -73,15 +71,12 @@ public class PulseGenerator extends Thread implements IPulseSource {
                 } catch (InterruptedException ex) {
                     Logger.getLogger(PulseGenerator.class.getName()).log(Level.SEVERE, null, ex);
                 }
-
-
                 break;
             }
         }
 
 
     }
-
 
     @Override
     public void setMode(byte mode) {

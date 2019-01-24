@@ -30,7 +30,7 @@ public class Facade implements Observer, Runnable {
         interruptDone = 0;
         clock = 0;
         clockTicks = 0;
-        frequency = 2000;
+        frequency = 1000;
 
         updateVariables();
         gui.refreshGui();
@@ -39,7 +39,6 @@ public class Facade implements Observer, Runnable {
         generatorThread.start();
 
         timer = new Timer();
-
     }
 
     @Override
@@ -173,6 +172,10 @@ public class Facade implements Observer, Runnable {
 
     }
 
+    public void setBurst() {
+        generator.setPulseCount(parseInt(gui.burstField.getValue().toString()));
+    }
+
     public void changeGenMode() {
         if (generator.mode == (byte) 1) {
             gui.generatorModeBtn.setText("Set to continuous");
@@ -191,8 +194,7 @@ public class Facade implements Observer, Runnable {
 
     public void updateGraph() {
         gui.graph.scores.add((double) ticksDone);
-        if (gui.graph.scores.size() > 100)
-            gui.graph.scores.remove(0);
+
         clockTicks++;
         clock = (clockTicks * frequency) / 1000;
         gui.graph.repaint();
@@ -215,9 +217,7 @@ public class Facade implements Observer, Runnable {
             clock = 0;
             ticksDone = 0;
 
-
             gui.graph.scores = new ArrayList<>();
-
         }
         if (graph.isPaused) {
             graph.isPaused = false;

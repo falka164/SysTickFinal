@@ -82,7 +82,7 @@ public class SysTick extends Observable {
         }
         cvr--;
         countFlag = false;
-        if(cvr==0)countFlag = true;
+        if (cvr == 0) countFlag = true;
         interrupt = checkInterrupt();
 
     }

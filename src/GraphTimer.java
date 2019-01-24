@@ -11,12 +11,10 @@ public class GraphTimer extends TimerTask {
 
     @Override
     //co frequency odpalanie run()
-
     public void run() {
 
         if (!isPaused) {
             facade.updateGraph();
         }
     }
-
 }

@@ -1,6 +1,5 @@
 import java.awt.BasicStroke;
 import java.awt.Color;
-import java.awt.Dimension;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -9,23 +8,10 @@ import java.awt.RenderingHints;
 import java.awt.Stroke;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
-import javax.swing.JFrame;
 import javax.swing.JPanel;
-import javax.swing.SwingUtilities;
 
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-/**
- *
- * @author Rodrigo
- */
 public class GraphPanel extends JPanel {
 
-    private int width = 800;
-    private int heigth = 400;
     private int padding = 25;
     private int labelPadding = 25;
     private Color lineColor = new Color(44, 102, 230, 180);
@@ -36,12 +22,15 @@ public class GraphPanel extends JPanel {
     private int numberYDivisions = 10;
     public List<Double> scores;
 
+    public int samples = 500;
+
     public GraphPanel(List<Double> scores) {
         this.scores = scores;
     }
 
     @Override
     protected void paintComponent(Graphics g) {
+        deleteOldestNode(samples);
         super.paintComponent(g);
         System.gc();
         Graphics2D g2 = (Graphics2D) g;
@@ -152,5 +141,9 @@ public class GraphPanel extends JPanel {
         return scores;
     }
 
+    public void deleteOldestNode(int x) {
+        if (scores.size() > x)
+            scores.remove(0);
+    }
 
 }
