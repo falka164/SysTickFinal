@@ -16,6 +16,10 @@ public class Facade implements Observer, Runnable {
     public int interruptDone;
     public Thread generatorThread;
     public Timer timer;
+    public int clock;
+    public int frequency;
+    public int clockTicks;
+    public GraphTimer graph;
 
     public Facade() {
         systick = new SysTick(this);
@@ -24,6 +28,9 @@ public class Facade implements Observer, Runnable {
 
         ticksDone = 0;
         interruptDone = 0;
+        clock = 0;
+        clockTicks = 0;
+        frequency = 2000;
 
         updateVariables();
         gui.refreshGui();
@@ -32,7 +39,7 @@ public class Facade implements Observer, Runnable {
         generatorThread.start();
 
         timer = new Timer();
-        timer.schedule(new GraphTimer(this), 1000, 100);
+
     }
 
     @Override
@@ -186,26 +193,49 @@ public class Facade implements Observer, Runnable {
         gui.graph.scores.add((double) ticksDone);
         if (gui.graph.scores.size() > 100)
             gui.graph.scores.remove(0);
+        clockTicks++;
+        clock = (clockTicks * frequency) / 1000;
         gui.graph.repaint();
+        showTimerInGui();
     }
 
     public void showTimerInGui() {      //wywołać przy starcie wykresu
 
-        gui.timeField.setValue(timer.toString());
+        gui.timeField.setValue(clock);
     }
 
     public void startGraph() {
-        showTimerInGui();
 
+        if (graph == null) {
+            graph = new GraphTimer(this);
+
+            timer.schedule(graph, 0, frequency);
+            gui.timeField.setValue(0);
+            clockTicks = 0;
+            clock = 0;
+            ticksDone = 0;
+
+
+            gui.graph.scores = new ArrayList<>();
+
+        }
+        if (graph.isPaused) {
+            graph.isPaused = false;
+        }
     }
 
     public void pauseGraph() {
-
+        if (graph != null) {
+            graph.isPaused = true;
+        }
     }
+
 
     public void stopGraph() {
-
+        if (graph != null) {
+            graph.cancel();
+            timer.purge();
+            graph = null;
+        }
     }
-
-
 }

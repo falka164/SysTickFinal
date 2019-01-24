@@ -171,7 +171,7 @@ public class GuiSysTick {
         ticksLabel.setLabelFor(ticksField);
         interruptLabel.setLabelFor(interruptField);
 
-        infoPane.setBorder(BorderFactory.createTitledBorder(" Actual Stats Counter"));
+        infoPane.setBorder(BorderFactory.createTitledBorder(" Current Stats Counter"));
 
         infoPane.add(ticksLabel);
         infoPane.add(ticksField);
@@ -252,7 +252,7 @@ public class GuiSysTick {
         interruptflagStateLabel.setLabelFor(interruptflagStateField);
         modeStateLabel.setLabelFor(modeStateField);
 
-        allDataStates.setBorder(BorderFactory.createTitledBorder("Systick State Info"));
+        allDataStates.setBorder(BorderFactory.createTitledBorder("Current State "));
         allDataStates.setLayout(new BoxLayout(allDataStates, BoxLayout.Y_AXIS));
 
         allDataStates.add(Box.createRigidArea(new Dimension(0, 10)));
@@ -290,7 +290,7 @@ public class GuiSysTick {
 
 
     private void createSouthPanel() {
-        southPane.setBorder(BorderFactory.createTitledBorder(" Generator "));
+        southPane.setBorder(BorderFactory.createTitledBorder(" Ticks Generator "));
 
         southPane.setLayout(new FlowLayout(FlowLayout.CENTER, 0, 0));
 
@@ -441,7 +441,7 @@ public class GuiSysTick {
     private void grapfHandlingPanel() {
         graphHandlingPanel = new JPanel();
 
-        timeField = createTextFiled("00:00:000", Color.darkGray, false, 7);
+        timeField = createTextFiled("time", Color.darkGray, false, 7);
 
         startGraphBtn = new JButton("Start");
         pauseGraphBtn = new JButton("Pause");

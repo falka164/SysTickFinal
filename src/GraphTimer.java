@@ -2,13 +2,21 @@ import java.util.TimerTask;
 
 public class GraphTimer extends TimerTask {
     Facade facade;
+    public boolean isPaused;
+
     public GraphTimer(Facade facade) {
-        this.facade=facade;
+        isPaused = false;
+        this.facade = facade;
     }
 
     @Override
-    public void run() {
-        facade.updateGraph();
+    //co frequency odpalanie run()
 
+    public void run() {
+
+        if (!isPaused) {
+            facade.updateGraph();
+        }
     }
+
 }
