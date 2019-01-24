@@ -126,11 +126,6 @@ public class GraphPanel extends JPanel {
         }
     }
 
-//    @Override
-//    public Dimension getPreferredSize() {
-//        return new Dimension(width, heigth);
-//    }
-
     private double getMinScore() {
         double minScore = Double.MAX_VALUE;
         for (Double score : scores) {
@@ -157,26 +152,5 @@ public class GraphPanel extends JPanel {
         return scores;
     }
 
-    private static void createAndShowGui() {
-        List<Double> scores = new ArrayList<>();
-        scores.add(0.0);
 
-
-        GraphPanel mainPanel = new GraphPanel(scores);
-        mainPanel.setPreferredSize(new Dimension(800, 600));
-        JFrame frame = new JFrame("DrawGraph");
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.getContentPane().add(mainPanel);
-        frame.pack();
-        frame.setLocationRelativeTo(null);
-        frame.setVisible(true);
-    }
-
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(new Runnable() {
-            public void run() {
-                createAndShowGui();
-            }
-        });
-    }
 }

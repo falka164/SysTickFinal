@@ -15,19 +15,24 @@ public class Facade implements Observer, Runnable {
     public int ticksDone;
     public int interruptDone;
     public Thread generatorThread;
-    private Timer timer;
+    public Timer timer;
+
     public Facade() {
         systick = new SysTick(this);
         gui = new GuiSysTick(this);
         generator = new PulseGenerator(this);
+
         ticksDone = 0;
         interruptDone = 0;
+
         updateVariables();
         gui.refreshGui();
+
         generatorThread = new Thread(generator);
         generatorThread.start();
-        timer=new Timer();
-        timer.schedule(new GraphTimer(this),1000,100);
+
+        timer = new Timer();
+        timer.schedule(new GraphTimer(this), 1000, 100);
     }
 
     @Override
@@ -42,7 +47,7 @@ public class Facade implements Observer, Runnable {
 
     public void makeTick(int x) {
         for (int i = 0; i < x; i++) {
-            if (systick.isEnableFlag() && systick.getRvr()>0) {
+            if (systick.isEnableFlag() && systick.getRvr() > 0) {
                 ticksDone++;
             }
             systick.tick();
@@ -50,7 +55,7 @@ public class Facade implements Observer, Runnable {
     }
 
     public void howManyInterrupt() {
-       String  val = gui.interruptflagStateField.getValue().toString();
+        String val = gui.interruptflagStateField.getValue().toString();
         if (val.equals("true")) {
             interruptDone++;
         }
@@ -86,12 +91,9 @@ public class Facade implements Observer, Runnable {
         gui.tickintInit.setSelected(false);
         gui.ticksField.setValue(0);
         gui.interruptField.setValue(0);
-        ticksDone=0;
-        interruptDone=0;
-        gui.graph.scores=new ArrayList<>();
-
-   //     gui.offGenBtn.setSelected(true);
-     //   gui.generatorLed.setForeground(Color.gray);
+        ticksDone = 0;
+        interruptDone = 0;
+        gui.graph.scores = new ArrayList<>();
 
         refreshGui();
 
@@ -100,13 +102,13 @@ public class Facade implements Observer, Runnable {
     public void resetGenerator() {
 
         gui.modeStateField.setValue("continuous");
-        generator.setMode((byte)1);
+        generator.setMode((byte) 1);
         gui.generatorModeBtn.setText("Set to burst");
         generator.setPulseDelay(1000);
         generator.setPulseCount(0);
         gui.delayField.setValue(1000);
         gui.burstField.setValue(0);
-            }
+    }
 
     public void setTickInt() {
 
@@ -179,10 +181,31 @@ public class Facade implements Observer, Runnable {
         }
 
     }
-    public void updateGraph(){
-        gui.graph.scores.add((double)ticksDone);
-        if(gui.graph.scores.size()>100)
-        gui.graph.scores.remove(0);
+
+    public void updateGraph() {
+        gui.graph.scores.add((double) ticksDone);
+        if (gui.graph.scores.size() > 100)
+            gui.graph.scores.remove(0);
         gui.graph.repaint();
     }
+
+    public void showTimerInGui() {      //wywołać przy starcie wykresu
+
+        gui.timeField.setValue(timer.toString());
+    }
+
+    public void startGraph() {
+        showTimerInGui();
+
+    }
+
+    public void pauseGraph() {
+
+    }
+
+    public void stopGraph() {
+
+    }
+
+
 }

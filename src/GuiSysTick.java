@@ -19,14 +19,14 @@ public class GuiSysTick {
     private JFrame frame;
 
     public JRadioButton onGenBtn, offGenBtn;
-    public JButton generatorModeBtn, oneStepBtn, manyStepBtn, resetSystickBtn, setRegistersBtn;
+    public JButton generatorModeBtn, oneStepBtn, manyStepBtn, resetSystickBtn, setRegistersBtn,startGraphBtn,pauseGraphBtn,stopGraphBtn ;
     private ButtonGroup radioBtnGroup;
     public JCheckBox enableInit, tickintInit;
     private KeyListener onlyDigit;
     private JPanel northPane;
     private JPanel southPane;
     private JPanel eastPane;
-    private JPanel westPane, buttonPanel, mainPane,centerPane;
+    private JPanel westPane, buttonPanel, mainPane, centerPane;
 
     public JLabel ticksLabel, interruptLabel, rvrLabel, cvrLabel, rvrStateLabel,
             cvrStateLabel, enableflagStateLabel, countflagStateLabel, tickintFlagStateLabel,
@@ -39,7 +39,7 @@ public class GuiSysTick {
     public GraphPanel graph;
     public JLabel generatorLed;
     private JLabel modeStateLabel;
-    public JFormattedTextField modeStateField;
+    public JFormattedTextField modeStateField, timeField;
     private JLabel delayInfo;
     private JLabel burstInfo;
     private JPanel onOffGenPanel;
@@ -47,6 +47,7 @@ public class GuiSysTick {
     private JPanel generatorSettingPane;
     private JPanel generatorButtonPane;
     private JPanel generatorDelayPane, genertorBurstPane;
+    private JPanel graphHandlingPanel;
 
     //endregion
 
@@ -57,7 +58,7 @@ public class GuiSysTick {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.pack();
         frame.setVisible(true);
-        frame.setSize(800, 650);
+        frame.setSize(800, 700);
         frame.setResizable(false);
         frame.setLocationRelativeTo(null);
         frame.setLayout(new BorderLayout());
@@ -66,7 +67,7 @@ public class GuiSysTick {
         createMenuBar();
         createMainPane();
         createWestPanel();
-        createAndShowGraph();
+        createCenterPanel();
         onlyDigit = (new KeyListener() {
             @Override
             public void keyTyped(KeyEvent keyEvent) {
@@ -432,7 +433,39 @@ public class GuiSysTick {
     }
 
     private void createCenterPanel() {
-        //wykressssss
+        centerPane.setBorder(BorderFactory.createTitledBorder(" Graph F(x) = ticks(t) "));
+        grapfHandlingPanel();
+        createAndShowGraph();
+    }
+
+    private void grapfHandlingPanel() {
+        graphHandlingPanel = new JPanel();
+
+        timeField = createTextFiled("00:00:000", Color.darkGray, false, 7);
+
+        startGraphBtn = new JButton("Start");
+        pauseGraphBtn = new JButton("Pause");
+        stopGraphBtn = new JButton("Stop");
+
+        graphHandlingPanel.add(startGraphBtn);
+        graphHandlingPanel.add(pauseGraphBtn);
+        graphHandlingPanel.add(stopGraphBtn);
+
+        graphHandlingPanel.add(timeField);
+
+        centerPane.add(graphHandlingPanel);
+
+    }
+
+    private void createAndShowGraph() {
+        List<Double> scores = new ArrayList<>();
+
+        graph = new GraphPanel(scores);
+       // Dimension centerPaneDim = centerPane.getSize();
+        graph.setPreferredSize(new Dimension(450, 330));
+
+        centerPane.add(graph);
+
     }
 
     private void makeListeners() {
@@ -460,6 +493,12 @@ public class GuiSysTick {
 
         resetGeneratorBtn.addActionListener((event) -> facade.resetGenerator());
 
+        startGraphBtn.addActionListener((event) -> facade.startGraph());
+
+        pauseGraphBtn.addActionListener((event) -> facade.pauseGraph());
+
+        stopGraphBtn.addActionListener((event) -> facade.stopGraph());
+
         delayField.addKeyListener(onlyDigit);
         burstField.addKeyListener(onlyDigit);
         rvrField.addKeyListener(onlyDigit);
@@ -485,19 +524,6 @@ public class GuiSysTick {
         });
 
     }
-
-    private void createAndShowGraph() {
-        List<Double> scores = new ArrayList<>();
-
-        graph = new GraphPanel(scores);
-        Dimension centerPaneDim=centerPane.getSize();
-        graph.setPreferredSize(new Dimension(450,330));
-        centerPane.add(graph);
-
-
-
-    }
-
 
 }
 
