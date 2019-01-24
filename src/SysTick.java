@@ -52,6 +52,10 @@ public class SysTick extends Observable {
         return enableFlag;
     }
 
+public void setCountFlag() {
+        countFlag = false;
+}
+
 
     public boolean isCountFlag() {
         return countFlag;
@@ -77,11 +81,11 @@ public class SysTick extends Observable {
 
             interrupt = checkInterrupt();
             cvr = rvr;
-            countFlag = false;
+           // countFlag = false;
             return;
         }
         cvr--;
-        countFlag = false;
+     //   countFlag = false;
         if (cvr == 0) countFlag = true;
         interrupt = checkInterrupt();
 

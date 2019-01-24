@@ -159,8 +159,9 @@ public class GuiSysTick {
                     "\"Pause\" - zapauzowanie rysowania w danym momencie, ponowne kliknięcie \"Start\" wznawia rysowanie,,\n" +
                     "\"Stop\" - zatrzymanie rysowania \n" +
                     "Mini zegarek pokazuje czas, w którym trwają pomiary [s]. Jest aktualizowany co pomiar próbki.\n\n" +
-                    "Domyślna częstotliwość jest ustawiona na 1000. \n\n" +
-                    "Legenda:\nośX - czas\n" +
+                    "Domyślna częstotliwość jest ustawiona na 1000. Zapamiętywana jest ustalona ilość próbek, jeżeli przekracza \n" +
+                    "ona ustaloną wartość (domyślnie 500), to najstarsza próbka zostaje stracona. \n\n" +
+                    "Legenda:\nośX - liczba próbek\n" +
                     "ośY - ilość ticków", "About Diagram", JOptionPane.INFORMATION_MESSAGE);
         });
 

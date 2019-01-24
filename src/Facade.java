@@ -140,6 +140,8 @@ public class Facade implements Observer, Runnable {
 
         gui.cvrStateField.setValue(val);
         systick.setCvr(val);
+        systick.setCountFlag();
+        gui.countflagStateField.setText("false");
     }
 
     public void setRegisters() {
